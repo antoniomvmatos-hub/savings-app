@@ -1,4 +1,4 @@
-import type { MonthlySnapshot } from "../Models/MonthlySnapshot.ts";
+import type { MonthlySnapshot } from "../types";
 
 interface Props {
   data: MonthlySnapshot[];
@@ -63,28 +63,28 @@ function MonthlyTable({ data }: Props) {
                 {/* Tech ETF */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.techEtf.toLocaleString('pt-PT')}</strong>
-                  {renderInvested(row.techEtfInvested)} {/* Campo solicitado */}
+                  {renderInvested(row.techEtfInv)} {/* Campo solicitado */}
                   {renderDiff(row.techEtf, prevRow?.techEtf)}
                 </td>
 
                 {/* S&P 500 */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.sp500.toLocaleString('pt-PT')}</strong>
-                  {renderInvested(row.sp500Invested)}
+                  {renderInvested(row.sp500Inv)}
                   {renderDiff(row.sp500, prevRow?.sp500)}
                 </td>
 
                 {/* Fundo Segurança */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.safetyFund.toLocaleString('pt-PT')}</strong>
-                  {renderInvested(row.safetyFundInvested)}
+                  {renderInvested(row.safetyFundInv)}
                   {renderDiff(row.safetyFund, prevRow?.safetyFund)}
                 </td>
 
                 {/* Conta Corrente */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.checkingAccount.toLocaleString('pt-PT')}</strong>
-                  {renderInvested(row.checkingAccountInvested)}
+                  {renderInvested(row.checkingAccountInv)}
                   {renderDiff(row.checkingAccount, prevRow?.checkingAccount)}
                 </td>
               </tr>

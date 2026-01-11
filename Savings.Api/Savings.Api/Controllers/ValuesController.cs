@@ -54,7 +54,7 @@ namespace Savings.Api.Controllers
             return Ok(snapshot);
         }
 
-        // DELETE /api/snapshots/{id}  (opcional, mas útil teste deploy)
+        // DELETE /api/snapshots/{id}  (opcional, mas útil teste deploy v2)
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
