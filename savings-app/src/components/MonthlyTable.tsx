@@ -2,8 +2,10 @@ import type { MonthlySnapshot } from "../types";
 
 interface Props {
   data: MonthlySnapshot[];
+  onDelete: (id: number) => void;
 }
 
+// 1. Mantemos a função auxiliar fora do componente para ficar limpo
 function monthName(month: number): string {
   const months = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -12,9 +14,16 @@ function monthName(month: number): string {
   return months[month - 1];
 }
 
-function MonthlyTable({ data }: Props) {
-  
-  // Função para renderizar a diferença em relação ao mês anterior
+const MonthlyTable = ({ data, onDelete }: Props) => {
+
+  // 2. Função para o clique de apagar
+  const handleDeleteClick = (id: number) => {
+    if (window.confirm("Tens a certeza que queres eliminar este registo?")) {
+      onDelete(id);
+    }
+  };
+
+  // 3. Tuas funções de renderização (mantidas exatamente como tinhas)
   const renderDiff = (current: number, previous: number | undefined) => {
     if (previous === undefined) return <div style={{ color: '#888', fontSize: '0.75rem' }}>-</div>;
     const diff = current - previous;
@@ -28,7 +37,6 @@ function MonthlyTable({ data }: Props) {
     );
   };
 
-  // Função para renderizar o valor investido (o campo novo que pediu)
   const renderInvested = (value: number | undefined) => {
     return (
       <div style={{ color: '#555', fontSize: '0.8rem', fontStyle: 'italic' }}>
@@ -47,6 +55,7 @@ function MonthlyTable({ data }: Props) {
             <th>S&P 500</th>
             <th>Fundo Segurança</th>
             <th>Conta Corrente</th>
+            <th style={{ textAlign: 'center' }}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -54,38 +63,50 @@ function MonthlyTable({ data }: Props) {
             const prevRow = data[index - 1];
 
             return (
-              <tr key={`${row.year}-${row.month}`} style={{ borderBottom: '1px solid #f4f4f4' }}>
+              <tr key={row.id || `${row.year}-${row.month}`} style={{ borderBottom: '1px solid #f4f4f4' }}>
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{monthName(row.month)}</strong> <br/>
                   <small style={{ color: '#999' }}>{row.year}</small>
                 </td>
                 
-                {/* Tech ETF */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.techEtf.toLocaleString('pt-PT')}</strong>
-                  {renderInvested(row.techEtfInv)} {/* Campo solicitado */}
+                  {renderInvested(row.techEtfInv)}
                   {renderDiff(row.techEtf, prevRow?.techEtf)}
                 </td>
 
-                {/* S&P 500 */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.sp500.toLocaleString('pt-PT')}</strong>
                   {renderInvested(row.sp500Inv)}
                   {renderDiff(row.sp500, prevRow?.sp500)}
                 </td>
 
-                {/* Fundo Segurança */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.safetyFund.toLocaleString('pt-PT')}</strong>
                   {renderInvested(row.safetyFundInv)}
                   {renderDiff(row.safetyFund, prevRow?.safetyFund)}
                 </td>
 
-                {/* Conta Corrente */}
                 <td style={{ padding: '12px 8px' }}>
                   <strong>{row.checkingAccount.toLocaleString('pt-PT')}</strong>
                   {renderInvested(row.checkingAccountInv)}
                   {renderDiff(row.checkingAccount, prevRow?.checkingAccount)}
+                </td>
+
+                <td style={{ padding: '12px 8px', textAlign: 'center' }}>
+                  <button 
+                    className="button primary small icon solid fa-times"
+                    style={{
+                      backgroundColor: '#e74c3c', 
+                      boxShadow: 'none', 
+                      height: '2.5rem', 
+                      lineHeight: '2.5rem',
+                      padding: '0 1rem'
+                    }}
+                    onClick={() => row.id && handleDeleteClick(row.id)}
+                  >
+                    <span className="label">Apagar</span>
+                  </button>
                 </td>
               </tr>
             );
@@ -94,6 +115,6 @@ function MonthlyTable({ data }: Props) {
       </table>
     </div>
   );
-}
+}; // Fechamos o componente apenas uma vez aqui
 
 export default MonthlyTable;

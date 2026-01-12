@@ -1,4 +1,4 @@
-import type { MonthlySnapshot } from "../Models/MonthlySnapshot.ts";
+import type { MonthlySnapshot } from "../types";
 
 export const mockSnapshots: MonthlySnapshot[] = [
   {
@@ -8,10 +8,10 @@ export const mockSnapshots: MonthlySnapshot[] = [
     sp500: 800,
     safetyFund: 500,
     checkingAccount: 300,
-    techEtfInvested:1000,
-    sp500Invested:750,
-    safetyFundInvested:100,
-    checkingAccountInvested:100,
+    techEtfInv:1000,
+    sp500Inv:750,
+    safetyFundInv:100,
+    checkingAccountInv:100,
     
   },
   {
@@ -21,9 +21,9 @@ export const mockSnapshots: MonthlySnapshot[] = [
     sp500: 820,
     safetyFund: 520,
     checkingAccount: 350,
-    techEtfInvested:1000,
-    sp500Invested:750,
-    safetyFundInvested:100,
-    checkingAccountInvested:100,
+    techEtfInv:1000,
+    sp500Inv:750,
+    safetyFundInv:100,
+    checkingAccountInv:100,
   },
 ];
