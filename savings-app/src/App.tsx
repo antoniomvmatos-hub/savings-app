@@ -24,6 +24,26 @@ function App() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      // Ajusta o URL se a tua porta da API for diferente (ex: 5000)
+      const response = await fetch(`https://localhost:7165/api/snapshots/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Se a API apagou, removemos da lista no ecrã sem precisar de recarregar tudo
+        setSnapshots(prev => prev.filter(item => item.id !== id));
+        console.log("Registo eliminado com sucesso");
+      } else {
+        alert("Houve um erro ao tentar apagar na API.");
+      }
+    } catch (error) {
+      console.error("Erro na comunicação com a API:", error);
+      alert("Não foi possível contactar o servidor.");
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -68,7 +88,7 @@ function App() {
                     <button className="button primary" onClick={() => setShowForm(true)}>Adicionar Registro</button>
                   </div>
                   
-                  {loading ? <p>A carregar dados...</p> : <MonthlyTable data={snapshots} />}
+                  {loading ? <p>A carregar dados...</p> : <MonthlyTable data={snapshots} onDelete={handleDelete}/>}
                 </>
               )}
             </section>

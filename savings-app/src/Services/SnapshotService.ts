@@ -1,4 +1,4 @@
-import type { MonthlySnapshot } from "../Models/MonthlySnapshot.ts";
+import type { MonthlySnapshot } from "../types";
 
 const API_URL = "https://localhost:7219/api/snapshots";
 
@@ -19,4 +19,13 @@ export const saveSnapshot = async (snapshot: MonthlySnapshot): Promise<MonthlySn
 
   if (!res.ok) throw new Error("Erro ao salvar snapshot");
   return res.json();
+};
+
+// --- ADICIONA ESTA FUNÇÃO ---
+export const deleteSnapshot = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) throw new Error("Erro ao eliminar snapshot");
 };
