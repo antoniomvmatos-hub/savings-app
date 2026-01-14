@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import MonthlyTable from "./components/MonthlyTable";
 import SavingsForm from "./components/SavingsForm";
-import { getSnapshots } from "./Services/SnapshotService";
+import { getSnapshots, deleteSnapshot } from "./Services/SnapshotService";
 import type { MonthlySnapshot } from "./types";
 
 function App() {
@@ -24,25 +24,19 @@ function App() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      // Ajusta o URL se a tua porta da API for diferente (ex: 5000)
-      const response = await fetch(`https://localhost:7165/api/snapshots/${id}`, {
-        method: 'DELETE',
-      });
+const handleDelete = async (id: number) => {
+  try {
+    // 1. Chamamos a função do Service (que usa a porta 7219 correta)
+    await deleteSnapshot(id);
 
-      if (response.ok) {
-        // Se a API apagou, removemos da lista no ecrã sem precisar de recarregar tudo
-        setSnapshots(prev => prev.filter(item => item.id !== id));
-        console.log("Registo eliminado com sucesso");
-      } else {
-        alert("Houve um erro ao tentar apagar na API.");
-      }
-    } catch (error) {
-      console.error("Erro na comunicação com a API:", error);
-      alert("Não foi possível contactar o servidor.");
-    }
-  };
+    // 2. Se a API respondeu OK, removemos da lista visual
+    setSnapshots(prev => prev.filter(item => item.id !== id));
+    console.log("Registo eliminado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao eliminar:", error);
+    alert("Erro: A API não respondeu na porta 7219. Verifica se o Visual Studio está a correr o projeto.");
+  }
+};
 
   useEffect(() => {
     loadData();
