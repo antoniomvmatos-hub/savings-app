@@ -95,18 +95,27 @@ const MonthlyTable = ({ data, onDelete }: Props) => {
 
                 <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                   <button 
-                    className="button primary small icon solid fa-times"
+                    className="button primary small" // Removi as classes "icon solid fa-times" daqui
                     style={{
                       backgroundColor: '#e74c3c', 
                       boxShadow: 'none', 
                       height: '2.5rem', 
                       lineHeight: '2.5rem',
-                      padding: '0 1rem'
+                      padding: '0 1rem',
+                      display: 'inline-flex', // Adicionado para alinhar ícone e texto
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
                     }}
                     onClick={() => row.id && handleDeleteClick(row.id)}
-                  >
+>
+                    {/* O ÍCONE ENTRA AQUI COMO UMA TAG À PARTE */}
+                    <i className="fa-solid fa-xmark"></i> 
                     <span className="label">Apagar</span>
-                  </button>
+                    </button>
                 </td>
               </tr>
             );
