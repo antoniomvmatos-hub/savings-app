@@ -78,7 +78,8 @@ const handleDelete = async (id: number) => {
                 />
               ) : (
                 <>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
+                    <span> Total: </span>
                     <button className="button primary" onClick={() => setShowForm(true)}>Adicionar Registro</button>
                   </div>
                   
