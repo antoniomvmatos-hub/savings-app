@@ -3,6 +3,7 @@ import type { MonthlySnapshot } from "../types";
 interface Props {
   data: MonthlySnapshot[];
   onDelete: (id: number) => void;
+  onEdit: (snapshot: MonthlySnapshot) => void; // 1. Adiciona aqui
 }
 
 // 1. Mantemos a função auxiliar fora do componente para ficar limpo
@@ -14,7 +15,7 @@ function monthName(month: number): string {
   return months[month - 1];
 }
 
-const MonthlyTable = ({ data, onDelete }: Props) => {
+const MonthlyTable = ({ data, onDelete, onEdit }: Props) => {
 
   // 2. Função para o clique de apagar
   const handleDeleteClick = (id: number) => {
@@ -95,9 +96,26 @@ const MonthlyTable = ({ data, onDelete }: Props) => {
 
                 <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                   <button 
+                    className="button small icon solid fa-pencil-alt" // Ícone de lápis do template
+                    style={{ 
+                      boxShadow: 'none', 
+                      height: '2.5rem', 
+                      lineHeight: '2.5rem',
+                      padding: '0 1rem',
+                      display: 'inline-flex', // Adicionado para alinhar ícone e texto
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                      }}
+                    onClick={() => onEdit(row)} // Precisamos de passar o objeto todo para editar
+                      >
+                  </button>
+                  <button 
                     className="button primary small" // Removi as classes "icon solid fa-times" daqui
-                    style={{
-                      backgroundColor: '#e74c3c', 
+                    style={{ 
                       boxShadow: 'none', 
                       height: '2.5rem', 
                       lineHeight: '2.5rem',
@@ -114,7 +132,6 @@ const MonthlyTable = ({ data, onDelete }: Props) => {
 >
                     {/* O ÍCONE ENTRA AQUI COMO UMA TAG À PARTE */}
                     <i className="fa-solid fa-xmark"></i> 
-                    <span className="label">Apagar</span>
                     </button>
                 </td>
               </tr>

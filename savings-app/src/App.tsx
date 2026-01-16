@@ -9,6 +9,7 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [snapshots, setSnapshots] = useState<MonthlySnapshot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingSnapshot, setEditingSnapshot] = useState<MonthlySnapshot | null>(null);
 
   const loadData = async () => {
     try {
@@ -24,11 +25,20 @@ function App() {
     }
   };
 
+  const lastSnapshot = snapshots.length > 0 ? snapshots[snapshots.length-1] : null;
+  const totalPatrimonio = lastSnapshot
+    ? (lastSnapshot.techEtf + lastSnapshot.sp500 + lastSnapshot.safetyFund + lastSnapshot.checkingAccount)
+    : 0;
+
+  const handleEdit = (snapshot: MonthlySnapshot) => {
+      setEditingSnapshot(snapshot);
+      setShowForm(true); // Abre o formulário que já usas para o "Adicionar"
+  };
+
 const handleDelete = async (id: number) => {
   try {
     // 1. Chamamos a função do Service (que usa a porta 7219 correta)
     await deleteSnapshot(id);
-
     // 2. Se a API respondeu OK, removemos da lista visual
     setSnapshots(prev => prev.filter(item => item.id !== id));
     console.log("Registo eliminado com sucesso!");
@@ -70,20 +80,27 @@ const handleDelete = async (id: number) => {
 
               {showForm ? (
                 <SavingsForm 
-                  onCancel={() => setShowForm(false)} 
+                  snapshotToEdit={editingSnapshot} // Passa o estado de edição para o formulário
+                  onCancel={() => {
+                    setShowForm(false);
+                    setEditingSnapshot(null); // Limpa ao cancelar
+                  }} 
                   onSave={() => {
                     loadData(); 
                     setShowForm(false);
+                    setEditingSnapshot(null); // Limpa ao salvar
                   }} 
                 />
               ) : (
                 <>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-                    <span> Total: </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}> 
+                      Total Património: {totalPatrimonio}
+                    </span>
                     <button className="button primary" onClick={() => setShowForm(true)}>Adicionar Registro</button>
                   </div>
                   
-                  {loading ? <p>A carregar dados...</p> : <MonthlyTable data={snapshots} onDelete={handleDelete}/>}
+                  {loading ? <p>A carregar dados...</p> : <MonthlyTable data={snapshots} onDelete={handleDelete} onEdit={handleEdit}/>}
                 </>
               )}
             </section>
