@@ -3,8 +3,9 @@ import type { MonthlySnapshot } from "../types";
 import { saveSnapshot } from "../Services/SnapshotService";
 
 interface Props {
-  onSave: () => void; // Função que o App.tsx chama para atualizar a lista
-  onCancel: () => void; // Função para fechar o formulário
+  onCancel: () => void;
+  onSave: () => void;
+  snapshotToEdit: MonthlySnapshot | null; // Adiciona esta linha exatamente assim
 }
 
 function SavingsForm({ onSave, onCancel }: Props) {
