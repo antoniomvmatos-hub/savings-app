@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MonthlySnapshot } from "../types";
 import { saveSnapshot } from "../Services/SnapshotService";
 
@@ -8,9 +8,11 @@ interface Props {
   snapshotToEdit: MonthlySnapshot | null; // Adiciona esta linha exatamente assim
 }
 
-function SavingsForm({ onSave, onCancel }: Props) {
+function SavingsForm({ onSave, onCancel, snapshotToEdit }: Props) {
   // Estado inicial para o mês (mês atual)
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(snapshotToEdit?.year ?? new Date().getFullYear());
+  const [id, setId] = useState(0); // Para controlar se é novo (0) ou edição
   
   // Estado único para os valores numéricos
   const [vals, setVals] = useState({
@@ -19,6 +21,26 @@ function SavingsForm({ onSave, onCancel }: Props) {
     safetyFund: 0, safetyFundInv: 0,
     checkingAccount: 0, checkingAccountInv: 0
   });
+
+  // --- NOVO: Efeito para preencher o formulário quando for Edição
+  useEffect(() => {
+    if(snapshotToEdit) {
+      setMonth(snapshotToEdit.month);
+      setYear(snapshotToEdit.year);
+      setId(snapshotToEdit.id || 0);
+      setVals({
+        techEtf: snapshotToEdit.techEtf,
+        techEtfInv: snapshotToEdit.techEtfInv || 0,
+        sp500: snapshotToEdit.sp500,
+        sp500Inv: snapshotToEdit.sp500Inv || 0,
+        safetyFund: snapshotToEdit.safetyFund,
+        safetyFundInv: snapshotToEdit.safetyFundInv || 0,
+        checkingAccount: snapshotToEdit.checkingAccount,
+        checkingAccountInv: snapshotToEdit.checkingAccountInv || 0,
+      });
+    }
+  }, [snapshotToEdit]);
+
 
   const handleChange = (field: string, value: string) => {
     // Garantimos que o valor é sempre um número ou 0
@@ -30,8 +52,9 @@ function SavingsForm({ onSave, onCancel }: Props) {
     
     const payload: MonthlySnapshot = {
       ...vals,
+      id,
       month,
-      year: new Date().getFullYear(),
+      year,
     };
 
     try {
@@ -46,7 +69,7 @@ function SavingsForm({ onSave, onCancel }: Props) {
   return (
     <section>
       <header className="major">
-        <h3>Adicionar Novo Registro</h3>
+        <h3>{id ? "Editar Registo" : "Adicionar Novo Registo"}Adicionar Novo Registro</h3>
         <p>Introduza os valores atuais e os montantes investidos para este mês.</p>
       </header>
       
@@ -89,13 +112,15 @@ function SavingsForm({ onSave, onCancel }: Props) {
                 <input 
                   type="number" 
                   step="0.01" 
-                  placeholder="Valor Atual (€)" 
+                  placeholder="Valor Atual (€)"
+                  value={vals[field.id as keyof typeof vals]}
                   onChange={(e) => handleChange(field.id, e.target.value)} 
                 />
                 <input 
                   type="number" 
                   step="0.01" 
-                  placeholder="Total Investido (€)" 
+                  placeholder="Total Investido (€)"
+                  value={vals[`${field.id}Inv` as keyof typeof vals]} // LIGA O VALOR AO ESTADO
                   onChange={(e) => handleChange(`${field.id}Inv`, e.target.value)} 
                 />
               </div>
