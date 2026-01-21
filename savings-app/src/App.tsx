@@ -89,7 +89,7 @@ const handleDelete = async (id: number) => {
                     loadData(); 
                     setShowForm(false);
                     setEditingSnapshot(null); // Limpa ao salvar
-                  }} 
+                  }}  
                 />
               ) : (
                 <>
