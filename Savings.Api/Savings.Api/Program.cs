@@ -1,17 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using Savings.Api.Data; // Certifica-te que este namespace aponta para a tua pasta Data
+
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. ADICIONA O SERVIÇO DE CORS AQUI ---
+// --- 1. CONFIGURAÇÃO DO CORS ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // A porta do teu Vite/React
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
-// ------------------------------------------
+
+// --- 2. CONFIGURAÇÃO DA BASE DE DADOS (EF CORE) ---
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -27,14 +33,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// --- 2. ATIVA O CORS AQUI (Antes do Authorization e MapControllers) ---
 app.UseCors("AllowReactApp");
-// ----------------------------------------------------------------------
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

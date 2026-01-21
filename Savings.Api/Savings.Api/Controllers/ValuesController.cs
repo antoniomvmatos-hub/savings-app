@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Savings.Api.Data;
 using Savings.Api.Models;
 
 namespace Savings.Api.Controllers
@@ -7,61 +9,51 @@ namespace Savings.Api.Controllers
     [Route("api/snapshots")]
     public class SnapshotsController : ControllerBase
     {
-        private static readonly List<MonthlySnapshot> _snapshots = new();
+        private readonly AppDbContext _context;
+
+        // O ASP.NET injeta o contexto da base de dados aqui automaticamente
+        public SnapshotsController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         // GET /api/snapshots
         [HttpGet]
-        public ActionResult<List<MonthlySnapshot>> GetAll()
+        public async Task<ActionResult<List<MonthlySnapshot>>> GetAll()
         {
-            return Ok(_snapshots);
+            return await _context.Snapshots.ToListAsync();
         }
 
-        // GET /api/snapshots/{id}
-        [HttpGet("{id}")]
-        public ActionResult<MonthlySnapshot> GetById(int id)
-        {
-            var snapshot = _snapshots.FirstOrDefault(x => x.Id == id);
-            if (snapshot == null) return NotFound();
-            return Ok(snapshot);
-        }
-
-        // POST /api/snapshots
+        // POST /api/snapshots (Cria ou Atualiza)
         [HttpPost]
-        public IActionResult Save(MonthlySnapshot snapshot)
+        public async Task<IActionResult> Save(MonthlySnapshot snapshot)
         {
             if (snapshot.Id == 0)
             {
-                // Novo registo: gerar Id automático
-                snapshot.Id = _snapshots.Count > 0 ? _snapshots.Max(x => x.Id) + 1 : 1;
-                _snapshots.Add(snapshot);
+                _context.Snapshots.Add(snapshot);
             }
             else
             {
-                // Edição: procurar pelo Id existente
-                var existing = _snapshots.FirstOrDefault(x => x.Id == snapshot.Id);
+                var existing = await _context.Snapshots.FindAsync(snapshot.Id);
                 if (existing == null) return NotFound();
 
-                existing.Year = snapshot.Year;
-                existing.Month = snapshot.Month;
-                existing.TechEtf = snapshot.TechEtf;
-                existing.TechEtfInv = snapshot.TechEtfInv;
-                existing.Sp500 = snapshot.Sp500;
-                existing.Sp500Inv = snapshot.Sp500Inv;
-                existing.SafetyFund = snapshot.SafetyFund;
-                existing.CheckingAccount = snapshot.CheckingAccount;
+                // Atualiza os valores
+                _context.Entry(existing).CurrentValues.SetValues(snapshot);
             }
 
+            await _context.SaveChangesAsync();
             return Ok(snapshot);
         }
 
-        // DELETE /api/snapshots/{id}  (opcional, mas útil teste deploy v2)
+        // DELETE /api/snapshots/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var existing = _snapshots.FirstOrDefault(x => x.Id == id);
-            if (existing == null) return NotFound();
+            var snapshot = await _context.Snapshots.FindAsync(id);
+            if (snapshot == null) return NotFound();
 
-            _snapshots.Remove(existing);
+            _context.Snapshots.Remove(snapshot);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }
