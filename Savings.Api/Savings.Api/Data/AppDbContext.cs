@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Savings.Api.Models; // Ajusta para o namespace onde está o teu MonthlySnapshot
+using Savings.Api.Models;
 
 namespace Savings.Api.Data
 {
@@ -10,5 +10,8 @@ namespace Savings.Api.Data
         }
 
         public DbSet<MonthlySnapshot> Snapshots { get; set; }
+
+        // ADICIONA ESTA LINHA ABAIXO:
+        public DbSet<User> Users { get; set; }
     }
 }
