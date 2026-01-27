@@ -1,7 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using Savings.Api.Data; // Certifica-te que este namespace aponta para a tua pasta Data
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var key = Encoding.ASCII.GetBytes("Esta_Eh_Uma_Chave_Super_Secreta_Com_Pelo_Menos_32_Caracteres!'");
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+// --------------------------------
 
 // --- 1. CONFIGURAÇÃO DO CORS ---
 builder.Services.AddCors(options =>
@@ -36,7 +60,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
+
+app.MapControllers();
 app.Run();

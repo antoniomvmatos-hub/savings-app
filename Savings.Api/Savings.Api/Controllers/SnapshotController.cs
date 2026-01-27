@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Savings.Api.Data;
 using Savings.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Savings.Api.Controllers
 {
+    [Authorize] //Bloqueia os acessos
     [ApiController]
     [Route("api/snapshots")]
     public class SnapshotsController : ControllerBase
