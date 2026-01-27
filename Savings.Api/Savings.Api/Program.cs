@@ -6,7 +6,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var key = Encoding.ASCII.GetBytes("Esta_Eh_Uma_Chave_Super_Secreta_Com_Pelo_Menos_32_Caracteres!");
+var key = Encoding.ASCII.GetBytes("Esta_Eh_Uma_Chave_Super_Secreta_Com_Pelo_Menos_32_Caracteres!'");
 
 builder.Services.AddAuthentication(x =>
 {
