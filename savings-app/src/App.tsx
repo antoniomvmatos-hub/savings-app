@@ -48,7 +48,7 @@ function App() {
         handleLogout();
       }
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
