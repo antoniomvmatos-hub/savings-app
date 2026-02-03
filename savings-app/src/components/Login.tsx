@@ -7,7 +7,7 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('');  
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
