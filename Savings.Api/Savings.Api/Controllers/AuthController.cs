@@ -24,6 +24,12 @@ namespace Savings.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserDto request)
         {
+            // Verifica se o utilizador já existe
+            if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+            {
+                return BadRequest("Este utilizador já existe.");
+            }
+
             string passwordHash = BC.HashPassword(request.Password);
 
             var user = new User
@@ -45,7 +51,8 @@ namespace Savings.Api.Controllers
 
             if (user == null || !BC.Verify(request.Password, user.PasswordHash))
             {
-                return BadRequest("Utilizador ou password incorretos.");
+                // Usamos Unauthorized (401) para falhas de credenciais no login
+                return Unauthorized("Utilizador ou password incorretos.");
             }
 
             var token = GenerateJwtToken(user);
@@ -55,14 +62,16 @@ namespace Savings.Api.Controllers
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            // Esta chave tem de ter 32 caracteres ou mais
-            var key = Encoding.ASCII.GetBytes("Esta_Eh_Uma_Chave_Super_Secreta_Com_Pelo_Menos_32_Caracteres!");
+
+            // ATENÇÃO: Esta chave foi sincronizada exatamente com a do teu Program.cs
+            // Contém o !' no final para bater certo com a validação do middleware.
+            var key = Encoding.ASCII.GetBytes("Esta_Eh_Uma_Chave_Super_Secreta_Com_Pelo_Menos_32_Caracteres!'");
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("id", user.Id.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
@@ -81,4 +90,4 @@ namespace Savings.Api.Controllers
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
-} 
+}

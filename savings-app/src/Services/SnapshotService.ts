@@ -1,31 +1,33 @@
+import axios from "axios";
 import type { MonthlySnapshot } from "../types";
 
 const API_URL = "https://localhost:7219/api/snapshots";
 
+// Função simples para obter o token e formatar o Header
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+};
+
 export const getSnapshots = async (): Promise<MonthlySnapshot[]> => {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error("Erro ao buscar snapshots");
-  return res.json();
+  const response = await axios.get<MonthlySnapshot[]>(API_URL, getAuthHeader());
+  return response.data;
 };
 
 export const saveSnapshot = async (snapshot: MonthlySnapshot): Promise<MonthlySnapshot> => {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(snapshot),
-  });
-
-  if (!res.ok) throw new Error("Erro ao salvar snapshot");
-  return res.json();
+  // Nota: No POST/PUT, o Header é o 3º argumento
+  const response = await axios.post<MonthlySnapshot>(API_URL, snapshot, getAuthHeader());
+  return response.data;
 };
 
-// --- ADICIONA ESTA FUNÇÃO ---
-export const deleteSnapshot = async (id: number): Promise<void> => {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
+export const updateSnapshot = async (id: number, snapshot: MonthlySnapshot): Promise<void> => {
+  await axios.put(`${API_URL}/${id}`, snapshot, getAuthHeader());
+};
 
-  if (!res.ok) throw new Error("Erro ao eliminar snapshot");
+export const deleteSnapshot = async (id: number): Promise<void> => {
+  await axios.delete(`${API_URL}/${id}`, getAuthHeader());
 };
